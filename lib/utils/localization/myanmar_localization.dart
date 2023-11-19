@@ -1,0 +1,3 @@
+final Map<String, String> mm = {
+  "Next": "ရှေ့ဆက် မည်",
+};
