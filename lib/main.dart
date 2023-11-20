@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:todo_get/controller/task_controller.dart';
 
 import 'controller/global_controller.dart';
 import 'utils/app_localization.dart';
@@ -22,6 +23,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final box = GetStorage();
     String changeLanguageCode = box.read('@language') ?? '';
+    Get.put(TaskController());
     return ResponsiveSizer(
       builder: (_, __, ___) => GetMaterialApp(
         debugShowCheckedModeBanner: false,
