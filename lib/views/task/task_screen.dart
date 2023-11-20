@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:todo_get/controller/task_controller.dart';
-import 'package:todo_get/models/task.dart';
 
+import '../../controller/task_controller.dart';
+import '../../models/task.dart';
 import '../../utils/localization/localization_controller.dart';
 
 class TaskScreen extends StatelessWidget {
@@ -16,6 +16,7 @@ class TaskScreen extends StatelessWidget {
         builder: (TaskController taskController) {
           return Scaffold(
             appBar: AppBar(
+              title: Text('Next'.tr),
               actions: [
                 GetBuilder<LocalizationController>(
                   builder: (LocalizationController localizationController) {
@@ -26,64 +27,7 @@ class TaskScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: ListView.builder(
-                itemCount: taskController.tasks.length,
-                itemBuilder: ((BuildContext context, int index) {
-                  final taskItem = taskController.tasks[index];
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: Card(
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 2.w),
-                        width: 90.w,
-                        child: Row(
-                          children: [
-                            taskController.tasks.isNotEmpty
-                                ? Expanded(
-                                    child: Text(
-                                    taskItem.title,
-                                    style: TextStyle(
-                                      fontSize: 4.w,
-                                      color: Colors.black,
-                                    ),
-                                  ))
-                                : const SizedBox.shrink(),
-                            IconButton(
-                              onPressed: () {
-                                taskController.titleEditingController.text =
-                                    taskItem.title;
-                                showModalBottomSheet(
-                                  context: context,
-                                  builder: (context) => _bottomModalSheet(
-                                    context: context,
-                                    taskController: taskController,
-                                    titleText: 'Update Task',
-                                    buttonText: 'Update',
-                                    taskItem: taskItem,
-                                    isUpdate: true,
-                                  ),
-                                );
-                              },
-                              icon: Icon(
-                                Icons.edit,
-                                size: 5.w,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                taskController.deleteTask(taskItem.id);
-                              },
-                              icon: Icon(
-                                Icons.delete,
-                                size: 5.w,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                })),
+            body: _taskListWidget(taskController),
             floatingActionButton: FloatingActionButton(
               onPressed: () => showBottomSheet(
                 context: context,
@@ -96,6 +40,81 @@ class TaskScreen extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _taskListWidget(TaskController taskController) {
+    if (taskController.tasks.isEmpty) {
+      return const Center(
+        child: Text(
+          'Empty tasks! \n Click \'+\' button to add task',
+          textAlign: TextAlign.center,
+        ),
+      );
+    } else {
+      return ListView.builder(
+        itemCount: taskController.tasks.length,
+        itemBuilder: ((BuildContext context, int index) {
+          final taskItem = taskController.tasks[index];
+          return _taskItemWidget(taskController, taskItem, context);
+        }),
+      );
+    }
+  }
+
+  Align _taskItemWidget(
+      TaskController taskController, Task taskItem, BuildContext context) {
+    return Align(
+      alignment: Alignment.topCenter,
+      child: Card(
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 2.w),
+          width: 90.w,
+          child: Row(
+            children: [
+              taskController.tasks.isNotEmpty
+                  ? Expanded(
+                      child: Text(
+                      taskItem.title,
+                      style: TextStyle(
+                        fontSize: 4.w,
+                        color: Colors.black,
+                      ),
+                    ))
+                  : const SizedBox.shrink(),
+              IconButton(
+                onPressed: () {
+                  taskController.titleEditingController.text = taskItem.title;
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (context) => _bottomModalSheet(
+                      context: context,
+                      taskController: taskController,
+                      titleText: 'Update Task',
+                      buttonText: 'Update',
+                      taskItem: taskItem,
+                      isUpdate: true,
+                    ),
+                  );
+                },
+                icon: Icon(
+                  Icons.edit,
+                  size: 5.w,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  taskController.deleteTask(taskItem.id);
+                },
+                icon: Icon(
+                  Icons.delete,
+                  size: 5.w,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
