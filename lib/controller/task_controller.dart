@@ -99,7 +99,8 @@ class TaskController extends GetxController {
 
   void allRemoveTask() {
     doneTasks.clear();
-    box.write('@doneTasks', doneTasks.map((task) => task.toJson()).toList());
+    box.write(
+        '@doneTasks', doneTasks.map((doneTask) => doneTask.toJson()).toList());
     update();
     debugPrint('$doneTasks');
   }

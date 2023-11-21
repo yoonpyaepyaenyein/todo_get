@@ -16,12 +16,14 @@ class DoneTaskScreen extends StatelessWidget {
         builder: (TaskController taskController) {
           return Scaffold(
             appBar: AppBar(
-              title: TextButton(
-                onPressed: () {
-                  taskController.allRemoveTask();
-                },
-                child: const Text('remove all'),
-              ),
+              title: taskController.doneTasks.isNotEmpty
+                  ? TextButton(
+                      onPressed: () {
+                        taskController.allRemoveTask();
+                      },
+                      child: const Text('remove all'),
+                    )
+                  : null,
               actions: [
                 GetBuilder<LocalizationController>(
                   builder: (LocalizationController localizationController) {
