@@ -8,6 +8,7 @@ import '../models/task.dart';
 class TaskController extends GetxController {
   TextEditingController titleEditingController = TextEditingController();
   List<Task> tasks = [];
+  List<Task> doneTasks = [];
   bool checkToggle = false;
 
   final box = GetStorage();
@@ -62,12 +63,27 @@ class TaskController extends GetxController {
   }
 
   void isDone({required bool value, required Task taskItem}) {
-    debugPrint('Value is $value and item is $taskItem');
+    // debugPrint('Value is $value and item is $taskItem');
     var index = tasks.indexWhere((element) => element.id == taskItem.id);
-    debugPrint('index is $index');
-    tasks[index] = Task(id: taskItem.id, title: taskItem.title, isDone: value);
-    debugPrint('list is ${tasks[index].isDone}');
-    update();
+    // debugPrint('index is $index');
+    var updateTask = Task(
+      id: taskItem.id,
+      title: taskItem.title,
+      isDone: value,
+    );
+
+    tasks[index] = updateTask;
+    // debugPrint('list is ${tasks[index].isDone}');
+    if (tasks[index].isDone) {
+      doneTasks.add(updateTask);
+      print('DOne Task is $doneTasks');
+      tasks.remove(updateTask);
+      print('Tasks is $tasks');
+      update();
+    } else {
+      doneTasks.remove(updateTask);
+      tasks.add(updateTask);
+    }
   }
 
   // void storeTask() {
