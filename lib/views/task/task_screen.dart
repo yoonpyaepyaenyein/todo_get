@@ -29,7 +29,8 @@ class TaskScreen extends StatelessWidget {
             ),
             body: _taskListWidget(taskController),
             floatingActionButton: FloatingActionButton(
-              onPressed: () => showBottomSheet(
+              onPressed: () => showModalBottomSheet(
+                isDismissible: false,
                 context: context,
                 builder: (context) => _bottomModalSheet(
                   context: context,
@@ -73,20 +74,29 @@ class TaskScreen extends StatelessWidget {
           width: 90.w,
           child: Row(
             children: [
-              taskController.tasks.isNotEmpty
-                  ? Expanded(
-                      child: Text(
-                      taskItem.title,
-                      style: TextStyle(
-                        fontSize: 4.w,
-                        color: Colors.black,
-                      ),
-                    ))
-                  : const SizedBox.shrink(),
+              Checkbox(
+                value: taskItem.isDone,
+                onChanged: (checkVal) {
+                  taskController.isDone(
+                    value: checkVal ?? false,
+                    taskItem: taskItem,
+                  );
+                },
+              ),
+              Expanded(
+                child: Text(
+                  taskItem.title,
+                  style: TextStyle(
+                    fontSize: 4.w,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
               IconButton(
                 onPressed: () {
                   taskController.titleEditingController.text = taskItem.title;
                   showModalBottomSheet(
+                    isDismissible: false,
                     context: context,
                     builder: (context) => _bottomModalSheet(
                       context: context,
@@ -119,7 +129,7 @@ class TaskScreen extends StatelessWidget {
     );
   }
 
-  Container _bottomModalSheet({
+  Widget _bottomModalSheet({
     required BuildContext context,
     required TaskController taskController,
     String titleText = 'Create Task',
@@ -127,46 +137,51 @@ class TaskScreen extends StatelessWidget {
     Task? taskItem,
     bool isUpdate = false,
   }) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.60,
-      width: double.infinity,
-      padding: EdgeInsets.symmetric(vertical: 2.h),
-      child: Column(
-        children: [
-          Text(
-            titleText,
-            style: TextStyle(
-              fontSize: 5.w,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          SizedBox(
-            height: 15.w,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: TextField(
-              controller: taskController.titleEditingController,
-              decoration: const InputDecoration(
-                hintText: ('Input Task here'),
+    return PopScope(
+      canPop: false,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.60,
+        width: double.infinity,
+        padding: EdgeInsets.symmetric(vertical: 2.h),
+        child: Column(
+          children: [
+            Text(
+              titleText,
+              style: TextStyle(
+                fontSize: 5.w,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-          SizedBox(
-            height: 10.h,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              !isUpdate
-                  ? taskController.createTask()
-                  : taskController.updateTask(taskItem ?? Task.empty);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.grey.shade200,
+            SizedBox(
+              height: 15.w,
             ),
-            child: Text(buttonText),
-          ),
-        ],
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              child: TextField(
+                controller: taskController.titleEditingController,
+                decoration: const InputDecoration(
+                  hintText: ('Input Task here'),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            ElevatedButton(
+              onPressed: () {
+                !isUpdate
+                    ? taskController.createTask()
+                    : taskController.updateTask(taskItem ?? Task.empty);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey.shade200,
+              ),
+              child: Text(buttonText),
+            ),
+            ElevatedButton(
+                onPressed: () => Get.back(), child: const Text('Cancel'))
+          ],
+        ),
       ),
     );
   }

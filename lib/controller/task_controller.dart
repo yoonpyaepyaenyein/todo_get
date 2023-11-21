@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -10,6 +8,7 @@ import '../models/task.dart';
 class TaskController extends GetxController {
   TextEditingController titleEditingController = TextEditingController();
   List<Task> tasks = [];
+  bool checkToggle = false;
 
   final box = GetStorage();
 
@@ -21,8 +20,7 @@ class TaskController extends GetxController {
   }
 
   void readTasks() {
-    tasks = 
-        (box.read<List<dynamic>>('@tasks') ?? []).map((taskJson) {
+    tasks = (box.read<List<dynamic>>('@tasks') ?? []).map((taskJson) {
       return Task.fromJson(taskJson);
     }).toList();
     //[Task(),Tsk()]
@@ -36,7 +34,7 @@ class TaskController extends GetxController {
     );
     // print('${task.title}');
     tasks.add(task);
-    print('Task List $tasks');
+    // print('Task List $tasks');
     update();
     titleEditingController.text = '';
     box.write('@tasks', tasks.map((task) => task.toJson()).toList());
@@ -50,16 +48,26 @@ class TaskController extends GetxController {
   }
 
   void updateTask(Task taskItem) {
-    print('ud:>> $taskItem');
+    // print('ud:>> $taskItem');
     final taskIndex = tasks.indexWhere((element) => element.id == taskItem.id);
-    debugPrint('$taskIndex');
+    // debugPrint('$taskIndex');
 
     final updateTask =
         Task(id: taskItem.id, title: titleEditingController.text);
 
     tasks[taskIndex] = updateTask;
+    box.write('@tasks', tasks.map((task) => task.toJson()).toList());
     update();
     Get.back();
+  }
+
+  void isDone({required bool value, required Task taskItem}) {
+    debugPrint('Value is $value and item is $taskItem');
+    var index = tasks.indexWhere((element) => element.id == taskItem.id);
+    debugPrint('index is $index');
+    tasks[index] = Task(id: taskItem.id, title: taskItem.title, isDone: value);
+    debugPrint('list is ${tasks[index].isDone}');
+    update();
   }
 
   // void storeTask() {
