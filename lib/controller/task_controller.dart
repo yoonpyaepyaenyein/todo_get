@@ -17,6 +17,7 @@ class TaskController extends GetxController {
   void onInit() {
     // Initialize the tasks list by reading from storage
     readTasks();
+    readDoneTasks();
     super.onInit();
   }
 
@@ -25,6 +26,13 @@ class TaskController extends GetxController {
       return Task.fromJson(taskJson);
     }).toList();
     //[Task(),Tsk()]
+    update();
+  }
+
+  void readDoneTasks() {
+    doneTasks = (box.read<List<dynamic>>('@doneTasks') ?? []).map((taskJson) {
+      return Task.fromJson(taskJson);
+    }).toList();
     update();
   }
 
@@ -76,14 +84,23 @@ class TaskController extends GetxController {
     // debugPrint('list is ${tasks[index].isDone}');
     if (tasks[index].isDone) {
       doneTasks.add(updateTask);
+      box.write('@doneTasks',
+          doneTasks.map((doneTask) => doneTask.toJson()).toList());
       print('DOne Task is $doneTasks');
       tasks.remove(updateTask);
+      box.write('@tasks', tasks.map((task) => task.toJson()).toList());
       print('Tasks is $tasks');
       update();
     } else {
       doneTasks.remove(updateTask);
       tasks.add(updateTask);
     }
+  }
+
+  void allRemoveTask() {
+    doneTasks.clear();
+    update();
+    debugPrint('$doneTasks');
   }
 
   // void storeTask() {
